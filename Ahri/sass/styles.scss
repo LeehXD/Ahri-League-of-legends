@@ -1,0 +1,111 @@
+$pixel-size: 10px;
+$pixel-color-list: (
+  "T": transparent,
+  "Q": #000000,
+  "R": #ff4791,
+  "D": #bf356d,
+  "P": #360369,
+  "V": #ffffff,
+  "M": #af3fd1,
+  "B": #6628f7,
+  "N": #752a8c,
+  "L": #d34cfc,
+  "X": #e890bf,
+  "O": #ffbda1,
+  "E": #e38062,
+  "A": #2cba22,
+  "C": #afff54,
+  "S": #cf0ac1,
+  "H": #ff4f6c,
+  "G": #f786e1
+);
+
+$pixel-matrix: 
+  (T T T T T T T T T T Q Q T T T T T T T T T T T T T T T T)
+  (T T T T T T T T T Q D Q T T T T T T T T T T T T Q Q Q T)
+  (T T T T T T T T Q R D Q T T T T T T T T T T T Q R R Q T)
+  (T T T T T T T P R D D Q Q Q Q Q Q Q Q Q Q T Q R R R Q T)
+  (T T T T T T T P D D D P P P P P P P P P Q Q R R D D Q T)
+  (T T T T T T P D D D P P P P P P V V V P P R R D D D Q T)
+  (T T T T T P D P P P M B B B B B P P P V V P D D D D Q T)
+  (T P P P P P P M B B B B M M B B B B N P V V P D D Q Q T)
+  (T P M M M M M B B B B M L L B B B B B N P V V P D Q T T)
+  (T T P M P B B B B B L L B B B B B B B B N P V V P Q T T)
+  (T T T P M B B B L L B B B B B B B B B B N P X V P Q Q T)
+  (T T P M B B B B B B B B B B B N Q B B B N N P V V P Q T)
+  (T P M B B B B B B B Q B N N N Q Q Q B N N N P V V P Q T)
+  (T P B B B B B B Q Q N N Q Q Q O O Q N N N N P V V P Q T)
+  (P M B B B B Q Q O Q Q Q O O O O O O Q Q N N P V V P Q T)
+  (P M B B P P O O O O O O O O O O O O O Q N P X V V V Q T)
+  (P M P P P P O Q Q Q O O O O O O Q Q Q E Q X V V A A V Q)
+  (P P Q P X P O O V P O O O O O O V P O E Q V V A C C A Q)
+  (T T Q P X P O O P P O O O O O O P P O E Q V V A C C A Q)
+  (T T Q P X P O O S P O O O O O O S P O E Q V V A C C A Q)
+  (T T Q P X P O O O O O O O O O O O O O E Q X V V A A V Q)
+  (T T Q P X P O O O O O O O O O O O O O Q M Q X V V V Q T)
+  (T T Q P X P Q E E E E E E E E E E E Q B M M P P P Q T T)
+  (T T Q Q P P M Q Q Q Q Q Q Q Q Q Q Q P B M P P M P Q T T)
+  (T T T Q P P M P H P P P P P P P P P B M M P P M M Q T T)
+  (T T T Q P B M P H H G H H H H H P B M M P P Q Q Q Q T T)
+  (T T T Q P P P P H H H D D D D D P P P P P Q Q T T T T T)
+  (T T T Q Q Q Q P H H G D D D D D D D D D Q Q T T T T T T)
+  (T T T T T T T Q P H H D D D D D D P P Q Q Q T T T T T T)
+  (T T T T T T T T Q P P P P P P P P P Q Q Q T T T T T T T)
+  (T T T T T T T T T Q Q Q Q Q Q Q Q Q T T T T T T T T T T);
+
+@function pixelize($matrix, $size: $pixel-size) {
+  $l: length($matrix);
+  $shadow: "";
+  $i: $l;
+
+  @for $i from 1 through $l {
+    $row: nth($matrix, $i);
+
+    @for $j from 1 through length($row) {
+      $item: nth($row, $j);
+
+      @if map-has-key($pixel-color-list, $item) {
+        $shadow: $shadow +
+          ($j * $size) +
+          " " +
+          ($i * $size) +
+          " " +
+          map-get($pixel-color-list, $item);
+      }
+
+      @if not($j == length($row) and $i == $l) {
+        $shadow: $shadow + ",";
+      }
+    }
+  }
+
+  @return unquote($shadow);
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #cf9cff;
+}
+
+.ahri {
+  position: relative;
+  font-size: 2em;
+  width: ($pixel-size * length(nth($pixel-matrix, 1)));
+  height: ($pixel-size * length($pixel-matrix));
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: (-$pixel-size);
+    left: (-$pixel-size);
+    width: $pixel-size;
+    height: $pixel-size;
+    box-shadow: pixelize($pixel-matrix, $pixel-size);
+  }
+}
